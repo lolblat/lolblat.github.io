@@ -18,9 +18,9 @@ We have another 2 more important registers, we have the ESI register, that holds
 
 We can split the VM operation to 3 steps: initialize the VM, getting and dispatching the command, and running the command.
 
-Step 1: initialize the VM, is creating the stack of the VM, creating the registers array, storing the VM instruction pointer into the ESI register, and also creating the encryption key.
+Step 1: initialize the VM, in this step we are creating the stack of the VM, creating the registers array, storing the VM instruction pointer into the ESI register, and also creating the encryption key.
 
-Step 2: getting and dispatching the command, We are getting the opcode from the VM Instruction pointer, the opcode is the size of 1 byte, We are incrementing the VM Instruction pointer, after We have the opcode, We start to decode the opcode, We are XORing the opcode with the encryption key, and do some more mathematical operation on the opcode, then We are XORing the encryption key with the decoded opcode, We are getting the handler of the opcode from hander's table, pushing the handler into the stack, and dispatching the opcode by returning into the handler.
+Step 2: where we are getting and dispatching the command, We are getting the opcode from the VM Instruction pointer, the opcode is the size of 1 byte, We are incrementing the VM Instruction pointer, after We have the opcode, We start to decode the opcode, We are XORing the opcode with the encryption key, and do some more mathematical operation on the opcode, then We are XORing the encryption key with the decoded opcode, We are getting the handler of the opcode from hander's table, pushing the handler into the stack, and dispatching the opcode by returning into the handler.
 
 Step 3: just running the command, and loop into the second step.
 
