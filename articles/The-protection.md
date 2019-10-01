@@ -46,7 +46,7 @@ Most of the work in this part, was to reverse each opcode, and create the emulat
 
 In light of this article representing the start of a series, you can expect more reversing and fun to come. I've came to the decision to create a debugger plugin for `x64dbg` to be able to debug the VM more easily, this plugin will be presented in the next article.
 
-I will upload all my tools into my [github](https://github.com/lolblat/Tools)
+I will upload all my tools into my [github](https://github.com/lolblat/Tools/tree/master/BattleEye)
 
 Thank you for reading :).
 
