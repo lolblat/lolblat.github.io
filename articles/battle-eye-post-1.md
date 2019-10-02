@@ -2,25 +2,33 @@
 
 ## Introduction
 
-Hello everyone, this is the first article in a series of articles about unpacking and reversing BattleEye, the first few article will be about unpacking BattleEye application. This articles are work-in-progress articles.
+Hello everyone, this is the first article in a series of articles about unpacking and reversing BattleEye.
+The first few article will be about unpacking BattleEye application. These articles are works-in-progress.
 
-Our target, the BattleEye application, is packed with VMProtect, we can figure it out after searching for past researches about BattleEye unpacking.
+Our target, the BattleEye application, is packed with VMProtect. We know that from past researches of BattleEye unpacking.
 
-So what is VMProtect?, VMProtect is a commercial software that offers packing and protection for your application. VMProtect is a virtual machine packer, this is not like regular packers that compress the data of the application, and then decompress it in run time using the stub. The virtual machine packing is creating a virtual CPU with custom opcodes, and convert your application to be able to run on the created CPU. The VM based protection, is used to make the reverse engineering of the application extremely hard, because you need to find and reverse each opcode to know exactly what the application is doing.
+## Unpacking the protection
+### So what is VMProtect?
+VMProtect is a commercial software that offers packing and protection for an application. VMProtect is a virtual machine packer.
+Regular packers compress the data of the application then decompress it on run time using the stub. The virtual machine packing, of the other hand, creates a virtual CPU with custom opcodes and convert your application's assembly to run on that special virtual CPU.
+Because the VM based protection changes the opcodes, it makes reverse engineering extremely complicated as you need to reverse engineer each custom opcode.
 
- ## Unpacking the protection
+On top of changing all the opcodes, the virtual CPU has fake opcodes, jumps and calls (instructions that do nothing). Before getting deep into reversing we need to filter out all these.
 
-The packing is highly obfuscated, it has useless jumps and calls, it has lot of useless instruction that I needed to filter out.
+After filtering out the useless instructions, we can create a quick summery of the VM itself. The VM creates its own registers and its own stack. The stack is stored inside the EBP register and the registers are stored inside the EDI register. The registers' stracture is essentially an array on the original program's stack (not on the VM's stack). The EDI register is the address of the array.
 
-After filtering out the useless instructions, we can create a quick summery about the VM itself, the VM is creating its own registers and its own stack, the stack is stored inside the EBP register, and the registers are stored inside the EDI register, the registers is an array on the original program stack (not on the VM stack), and the EDI register is the address of the array.
+We have another 2 more important registers; we have the ESI register, and the EBX register. The ESI holds the VM instruction pointer, and the EBX register holds the encryption key (we will take a look at the encryption mechanism and how it affects the program later).
 
-We have another 2 more important registers, we have the ESI register, that holds the VM instruction pointer, and we have the EBX register that holds the encryption key (we will take a look how it works and how it affect the program later).
+We can split the VM operation to 3 steps: 
+1. Initialization of the VM
+2. Getting and dispatching the command
+3. Running the command
 
-We can split the VM operation to 3 steps: initialize the VM, getting and dispatching the command, and running the command.
+### Step 1 - initialization of the VM
+In this step the program creates the stack of the VM and the registers array, stores the VM instruction pointer inside the ESI register and finally creates the encryption key.
 
-Step 1: initialize the VM, in this step we are creating the stack of the VM, creating the registers array, storing the VM instruction pointer into the ESI register, and also creating the encryption key.
-
-Step 2: where we are getting and dispatching the command, We are getting the opcode from the VM Instruction pointer, the opcode is the size of 1 byte, We are incrementing the VM Instruction pointer, after We have the opcode, We start to decode the opcode, We are XORing the opcode with the encryption key, and do some more mathematical operation on the opcode, then We are XORing the encryption key with the decoded opcode, We are getting the handler of the opcode from hander's table, pushing the handler into the stack, and dispatching the opcode by returning into the handler.
+### Step 2 - where we are getting and dispatching the command
+We are getting the opcode from the VM Instruction pointer, the opcode is the size of 1 byte, We are incrementing the VM Instruction pointer, after We have the opcode, We start to decode the opcode, We are XORing the opcode with the encryption key, and do some more mathematical operation on the opcode, then We are XORing the encryption key with the decoded opcode, We are getting the handler of the opcode from hander's table, pushing the handler into the stack, and dispatching the opcode by returning into the handler.
 
 Step 3: just running the command, and loop into the second step.
 
