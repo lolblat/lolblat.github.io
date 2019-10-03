@@ -8,7 +8,7 @@ Our target, the BattleEye application, is packed with VMProtect, we can figure i
 
 So what is VMProtect?, VMProtect is a commercial software that offers packing and protection for your application. VMProtect is a virtual machine packer, this is not like regular packers that compress the data of the application, and then decompress it in run time using the stub. The virtual machine packing is creating a virtual CPU with custom opcodes, and convert your application to be able to run on the created CPU. The VM based protection, is used to make the reverse engineering of the application extremely hard, because you need to find and reverse each opcode to know exactly what the application is doing.
 
- ## Unpacking the protection
+## Unpacking the protection
 
 The packing is highly obfuscated, it has useless jumps and calls, it has lot of useless instruction that I needed to filter out.
 
